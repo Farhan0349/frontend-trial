@@ -368,8 +368,8 @@ const AnimalTable: React.FC<AnimalTableProps> = ({ animals, shedData, setAnimals
                     {animals.length > 0 && (
                         <Tr>
                             <Td colSpan={8}>
-                                <Flex justify="space-between" align="center" px={4} flexWrap="wrap" gap={4}>
-                                    <Text>  Showing {Math.min((currentPage - 1) * rowsPerPage + 1, animals.length)} to{" "}
+                                <Flex justify="space-between" align="center" flexWrap="wrap" gap={4}>
+                                    <Text fontSize={"sm"} color={"#A3A3A3"}>  Showing {Math.min((currentPage - 1) * rowsPerPage + 1, animals.length)} to{" "}
                                         {Math.min(currentPage * rowsPerPage, animals.length)} of{" "}
                                         {animals.length} results</Text>
                                     {/* Numbered page buttons */}

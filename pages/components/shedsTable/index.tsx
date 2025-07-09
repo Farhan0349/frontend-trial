@@ -275,8 +275,8 @@ const ShedsTable: React.FC<ShedsTableProps> = ({ shedData, setShedData }) => {
             {filteredShedData.length > 0 && (
               <Tr>
                 <Td colSpan={8}>
-                  <Flex justify="space-between" align="center" px={4} flexWrap="wrap" gap={4}>
-                    <Text fontSize={"sm"}>
+                  <Flex justify="space-between" align="center" flexWrap="wrap" gap={4}>
+                    <Text fontSize={"sm"} color={"#A3A3A3"}>
                       Showing {Math.min((currentPage - 1) * rowsPerPage + 1, filteredShedData.length)} to{" "}
                       {Math.min(currentPage * rowsPerPage, filteredShedData.length)} of{" "}
                       {filteredShedData.length} results
