@@ -19,6 +19,8 @@ import {
     InputGroup,
     InputLeftElement,
     Flex,
+    Select,
+    Text,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import React, { useEffect, useState } from "react";
@@ -208,6 +210,44 @@ const AnimalTable: React.FC<AnimalTableProps> = ({ animals, shedData, setAnimals
     useEffect(() => {
         fetchAnimals();
     }, [searchTerm, animalType, healthStatus, animalStatus]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+
+    const totalPages = Math.ceil(animals.length / rowsPerPage);
+
+    const paginatedAnimals = animals.slice(
+        (currentPage - 1) * rowsPerPage,
+        currentPage * rowsPerPage
+    );
+
+    const handlePageClick = (pageNumber) => {
+        setCurrentPage(pageNumber);
+    };
+
+    const handleRowsPerPageChange = (e) => {
+        setRowsPerPage(Number(e.target.value));
+        setCurrentPage(1); // reset to first page
+    };
+
+    const renderPageNumbers = () => {
+        const pageButtons = [];
+
+        for (let i = 1; i <= totalPages; i++) {
+            pageButtons.push(
+                <Button
+                    key={i}
+                    size="sm"
+                    onClick={() => handlePageClick(i)}
+                    colorScheme={currentPage === i ? "blue" : "gray"}
+                    variant={currentPage === i ? "solid" : "outline"}
+                >
+                    {i}
+                </Button>
+            );
+        }
+
+        return pageButtons;
+    };
 
 
     return (<>
@@ -287,8 +327,8 @@ const AnimalTable: React.FC<AnimalTableProps> = ({ animals, shedData, setAnimals
                     </Tr>
                 </Thead>
                 <Tbody>
-                    {animals.length > 0 ? (
-                        animals.map((animal) => (
+                    {paginatedAnimals.length > 0 ? (
+                        paginatedAnimals.map((animal) => (
                             <Tr key={animal.id}>
                                 <Td>{animal.name}</Td>
                                 <Td>{animal.date_of_birth || "-"}</Td>
@@ -323,9 +363,42 @@ const AnimalTable: React.FC<AnimalTableProps> = ({ animals, shedData, setAnimals
                             </Td>
                         </Tr>
                     )}
+
+                    {/* Pagination Footer */}
+                    {animals.length > 0 && (
+                        <Tr>
+                            <Td colSpan={8}>
+                                <Flex justify="space-between" align="center" px={4} flexWrap="wrap" gap={4}>
+                                    <Text>  Showing {Math.min((currentPage - 1) * rowsPerPage + 1, animals.length)} to{" "}
+                                        {Math.min(currentPage * rowsPerPage, animals.length)} of{" "}
+                                        {animals.length} results</Text>
+                                    {/* Numbered page buttons */}
+                                    <Flex align={"center"} gap={6}>
+                                        <Flex gap={2}>
+                                            {renderPageNumbers()}
+                                        </Flex>
+                                        {/* Rows per page */}
+                                        <Flex align="center" gap={2}>
+                                            <span>Rows per page:</span>
+                                            <Select
+                                                value={rowsPerPage}
+                                                onChange={handleRowsPerPageChange}
+                                                width="80px"
+                                            >
+                                                <option value="5">5</option>
+                                                <option value="10">10</option>
+                                                <option value="15">15</option>
+                                            </Select>
+                                        </Flex>
+                                    </Flex>
+                                </Flex>
+                            </Td>
+                        </Tr>
+                    )}
+
                 </Tbody>
             </Table>
-        </TableContainer>
+        </TableContainer >
         <AnimalModal
             isOpen={isUpdateAnimalOpen}
             onClose={onUpdateAnimalClose}

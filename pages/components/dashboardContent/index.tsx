@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Tab,
   TabList,
   TabPanel,
@@ -210,10 +211,10 @@ const DashboardContent = () => {
       <Tabs w="100%">
         <TabList w="100%">
           <Tab w="100%">Dashboard</Tab>
-          <Tab w="100%" onClick={onAnimalOpen}>
+          <Tab w="100%">
             Add Animals
           </Tab>
-          <Tab w="100%" onClick={onShedOpen}>
+          <Tab w="100%">
             Add Sheds
           </Tab>
         </TabList>
@@ -223,6 +224,9 @@ const DashboardContent = () => {
             <p>Dashboard</p>
           </TabPanel>
           <TabPanel>
+            <Button background="blue.900" onClick={onAnimalOpen} my={5}>
+              Add Animals
+            </Button>
             <AnimalTable
               animals={animalsData}
               shedData={shedData}
@@ -231,6 +235,9 @@ const DashboardContent = () => {
           </TabPanel>
           <TabPanel>
             {/* table */}
+            <Button background="blue.900" onClick={onShedOpen} my={5}>
+              Add Sheds
+            </Button>
             <ShedsTable shedData={shedData} setShedData={setShedData} />
           </TabPanel>
         </TabPanels>

@@ -19,6 +19,9 @@ import {
   InputGroup,
   Kbd,
   InputLeftElement,
+  Flex,
+  Select,
+  Text,
 } from "@chakra-ui/react";
 import React, { useState } from "react";
 import ShedLocationModal, {
@@ -27,7 +30,7 @@ import ShedLocationModal, {
 import { useForm } from "react-hook-form";
 import { ChevronDownIcon, PhoneIcon } from "@chakra-ui/icons";
 import { LuSearch } from "react-icons/lu";
-
+import { GrPrevious, GrNext } from "react-icons/gr";
 export interface Livestock {
   id: number;
   name: string;
@@ -131,7 +134,8 @@ const ShedsTable: React.FC<ShedsTableProps> = ({ shedData, setShedData }) => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
   const filteredShedData = shedData.filter((shed) => {
     const matchesSearch = shed.name
       .toLowerCase()
@@ -143,7 +147,44 @@ const ShedsTable: React.FC<ShedsTableProps> = ({ shedData, setShedData }) => {
     return matchesSearch && matchesStatus;
   });
 
-  console.log("currentShed", currentShed);
+
+
+  const totalPages = Math.ceil(filteredShedData.length / rowsPerPage);
+
+  const paginatedSheds = filteredShedData.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
+
+  const handlePageClick = (pageNum) => {
+    setCurrentPage(pageNum);
+  };
+
+  const handleRowsPerPageChange = (e) => {
+    setRowsPerPage(Number(e.target.value));
+    setCurrentPage(1); // Reset to first page
+  };
+
+  const renderPageNumbers = () => {
+    const pageButtons = [];
+
+    for (let i = 1; i <= totalPages; i++) {
+      pageButtons.push(
+        <Button
+          key={i}
+          size="sm"
+          onClick={() => handlePageClick(i)}
+          colorScheme={currentPage === i ? "blue" : "gray"}
+          variant={currentPage === i ? "solid" : "outline"}
+        >
+          {i}
+        </Button>
+      );
+    }
+
+    return pageButtons;
+  };
+
 
   return (
     <>
@@ -191,8 +232,8 @@ const ShedsTable: React.FC<ShedsTableProps> = ({ shedData, setShedData }) => {
             </Tr>
           </Thead>
           <Tbody>
-            {filteredShedData.length > 0 ? (
-              filteredShedData.map((animal) => (
+            {paginatedSheds.length > 0 ? (
+              paginatedSheds.map((animal) => (
                 <Tr key={animal.id}>
                   <Td>{animal.name}</Td>
                   <Td>{animal.description ? animal.description : "-"}</Td>
@@ -231,6 +272,39 @@ const ShedsTable: React.FC<ShedsTableProps> = ({ shedData, setShedData }) => {
                 </Td>
               </Tr>
             )}
+            {filteredShedData.length > 0 && (
+              <Tr>
+                <Td colSpan={8}>
+                  <Flex justify="space-between" align="center" px={4} flexWrap="wrap" gap={4}>
+                    <Text fontSize={"sm"}>
+                      Showing {Math.min((currentPage - 1) * rowsPerPage + 1, filteredShedData.length)} to{" "}
+                      {Math.min(currentPage * rowsPerPage, filteredShedData.length)} of{" "}
+                      {filteredShedData.length} results
+                    </Text>
+
+                    {/* Numbered Pagination */}
+                    <Flex justify={"center"} gap={6}>
+                      <Flex gap={2}>
+                        {renderPageNumbers()}
+                      </Flex> {/* Rows per page */}
+                      <Flex align="center" gap={2}>
+                        <span>Rows per page:</span>
+                        <Select
+                          value={rowsPerPage}
+                          onChange={handleRowsPerPageChange}
+                          width="80px"
+                        >
+                          <option value="5">5</option>
+                          <option value="10">10</option>
+                          <option value="15">15</option>
+                        </Select>
+                      </Flex>
+                    </Flex>
+                  </Flex>
+                </Td>
+              </Tr>
+            )}
+
           </Tbody>
         </Table>
       </TableContainer>
